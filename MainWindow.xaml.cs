@@ -52,19 +52,19 @@ namespace pop_razvan_lab5
             customerVSource =((System.Windows.Data.CollectionViewSource)(this.FindResource("customerViewSource")));
             customerVSource.Source = ctx.Customers.Local;
             ctx.Customers.Load();
-            customerOrdersVSource =
-((System.Windows.Data.CollectionViewSource)(this.FindResource("customerOrdersViewSource")));
+            customerOrdersVSource =((System.Windows.Data.CollectionViewSource)(this.FindResource("customerOrdersViewSource")));
+          
 
             customerOrdersVSource.Source = ctx.Orders.Local;
             ctx.Orders.Load();
             ctx.Inventories.Load();
             cmbCustomers.ItemsSource = ctx.Customers.Local;
             //cmbCustomers.DisplayMemberPath = "FirstName";
-            cmbCustomers.DisplayMemberPath = "FirstName";
+            //cmbCustomers.DisplayMemberPath = "FirstName";
             cmbCustomers.SelectedValuePath = "CustId";
             cmbInventory.ItemsSource = ctx.Inventories.Local;
             //cmbInventory.DisplayMemberPath = "Make";
-            cmbInventory.DisplayMemberPath = "Make";
+            //cmbInventory.DisplayMemberPath = "Make";
             cmbInventory.SelectedValuePath = "CarId";
             // customerOrdersVSource.Source = ctx.Orders.Local;
             BindDataGrid();
@@ -72,10 +72,12 @@ namespace pop_razvan_lab5
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             action = ActionState.New;
+            SetValidationBinding();
         }
         private void btnEditO_Click(object sender, RoutedEventArgs e)
         {
             action = ActionState.Edit;
+            SetValidationBinding();
         }
         private void btnDeleteO_Click(object sender, RoutedEventArgs e)
         {
@@ -345,6 +347,32 @@ namespace pop_razvan_lab5
                                  inv.Color
                              };
             customerOrdersVSource.Source = queryOrder.ToList();
+        }
+        private void SetValidationBinding()
+        {
+            Binding firstNameValidationBinding = new Binding();
+            firstNameValidationBinding.Source = customerVSource;
+            firstNameValidationBinding.Path = new PropertyPath("FirstName");
+            firstNameValidationBinding.NotifyOnValidationError = true;
+            firstNameValidationBinding.Mode = BindingMode.TwoWay;
+            firstNameValidationBinding.UpdateSourceTrigger =
+           UpdateSourceTrigger.PropertyChanged;
+            //string required
+            firstNameValidationBinding.ValidationRules.Add(new StringNotEmpty());
+            firstNameTextBox.SetBinding(TextBox.TextProperty,
+           firstNameValidationBinding);
+            Binding lastNameValidationBinding = new Binding();
+            lastNameValidationBinding.Source = customerVSource;
+            lastNameValidationBinding.Path = new PropertyPath("LastName");
+            lastNameValidationBinding.NotifyOnValidationError = true;
+            lastNameValidationBinding.Mode = BindingMode.TwoWay;
+            lastNameValidationBinding.UpdateSourceTrigger =
+           UpdateSourceTrigger.PropertyChanged;
+            //string min length validator
+            lastNameValidationBinding.ValidationRules.Add(new
+           StringMinLengthValidator());
+            lastNameTextBox.SetBinding(TextBox.TextProperty,
+           lastNameValidationBinding); //setare binding nou
         }
     }
 }
